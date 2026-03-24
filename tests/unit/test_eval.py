@@ -12,7 +12,7 @@ def test_accuracy_perfect():
     assert accuracy([0, 1, 1, 0], [0, 1, 1, 0]) == 1.0
 
 
-def test_accuracy_half():
+def test_accuracy_zero():
     assert accuracy([0, 1, 0, 1], [1, 0, 1, 0]) == 0.0
 
 
