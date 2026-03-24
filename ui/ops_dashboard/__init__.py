@@ -1,1 +1,1 @@
-# ui/ops-dashboard — Streamlit ops dashboard
+# ui/ops_dashboard — Streamlit ops dashboard
