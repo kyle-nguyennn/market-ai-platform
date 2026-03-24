@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EvalReport",
+  "type": "object",
+  "required": ["eval_run_id", "baseline_model", "candidate_model", "metrics"],
+  "properties": {
+    "eval_run_id":      { "type": "string" },
+    "baseline_model":   { "type": "string" },
+    "candidate_model":  { "type": "string" },
+    "dataset_version":  { "type": "string" },
+    "metrics":          { "type": "object" },
+    "slice_metrics":    { "type": "object" },
+    "promotion_decision": { "type": "string", "enum": ["approved", "blocked"] }
+  }
+}

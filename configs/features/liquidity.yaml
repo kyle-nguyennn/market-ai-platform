@@ -1,0 +1,6 @@
+name: adv_20d
+version: "1"
+description: 20-day average daily dollar volume
+inputs: [close, volume]
+window: 20
+formula: "(close * volume).rolling(20).mean()"

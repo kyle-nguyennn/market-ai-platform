@@ -1,0 +1,13 @@
+name: xgb_alpha_v1
+model_type: xgboost
+task: classification
+dataset: daily_equities_v1
+features:
+  - ret_1d
+  - vol_20d
+  - adv_20d
+hyperparameters:
+  n_estimators: 200
+  max_depth: 4
+  learning_rate: 0.05
+  subsample: 0.8

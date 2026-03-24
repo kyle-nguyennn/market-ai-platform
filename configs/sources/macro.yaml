@@ -1,0 +1,8 @@
+name: macro
+source_type: macro_series
+provider: fred  # placeholder
+frequency: daily
+series:
+  - VIX
+  - DGS10
+  - BAMLH0A0HYM2

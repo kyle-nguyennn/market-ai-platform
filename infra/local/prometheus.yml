@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: dataset-platform
+    static_configs:
+      - targets: ["dataset-platform:8001"]
+
+  - job_name: inference-gateway
+    static_configs:
+      - targets: ["inference-gateway:8002"]
+
+  - job_name: eval-control-plane
+    static_configs:
+      - targets: ["eval-control-plane:8003"]

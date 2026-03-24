@@ -1,0 +1,13 @@
+name: default_eval
+metrics:
+  - auc
+  - log_loss
+  - rank_ic
+  - bucket_spread
+drift:
+  psi_threshold: 0.2
+  ks_threshold: 0.1
+promotion_gates:
+  min_auc_delta: 0.0
+  max_regression_slices: 0
+  block_on_drift: true
