@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OnlineFeatureSnapshot",
+  "type": "object",
+  "required": ["symbol", "as_of_ts", "freshness_ts", "feature_set_version", "features"],
+  "properties": {
+    "symbol":              { "type": "string" },
+    "as_of_ts":            { "type": "string", "format": "date-time" },
+    "freshness_ts":        { "type": "string", "format": "date-time" },
+    "feature_set_version": { "type": "string" },
+    "features":            { "type": "object" }
+  }
+}

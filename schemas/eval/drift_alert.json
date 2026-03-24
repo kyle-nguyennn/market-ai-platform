@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DriftAlert",
+  "type": "object",
+  "required": ["eval_run_id", "drift_type", "severity"],
+  "properties": {
+    "eval_run_id":  { "type": "string" },
+    "drift_type":   { "type": "string", "enum": ["feature", "score", "label", "null_rate"] },
+    "severity":     { "type": "string", "enum": ["warning", "critical"] },
+    "metric":       { "type": "string" },
+    "value":        { "type": "number" },
+    "threshold":    { "type": "number" }
+  }
+}

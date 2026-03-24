@@ -1,0 +1,6 @@
+name: prices
+source_type: daily_ohlcv
+provider: yfinance  # placeholder
+universe_config: configs/datasets/daily_equities_v1.yaml
+frequency: daily
+fields: [open, high, low, close, volume, adj_close]

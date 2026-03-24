@@ -1,0 +1,9 @@
+slices:
+  - name: high_vol_regime
+    filter: "vol_20d > vol_20d.quantile(0.75)"
+  - name: low_vol_regime
+    filter: "vol_20d < vol_20d.quantile(0.25)"
+  - name: high_liquidity
+    filter: "adv_20d > adv_20d.quantile(0.75)"
+  - name: low_liquidity
+    filter: "adv_20d < adv_20d.quantile(0.25)"

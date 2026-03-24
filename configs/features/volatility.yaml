@@ -1,0 +1,6 @@
+name: vol_20d
+version: "1"
+description: 20-day rolling realized volatility
+inputs: [ret_1d]
+window: 20
+formula: "ret_1d.rolling(20).std() * sqrt(252)"

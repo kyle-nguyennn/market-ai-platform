@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MacroSeries",
+  "type": "object",
+  "required": ["series_id", "ts", "value"],
+  "properties": {
+    "series_id": { "type": "string" },
+    "ts":        { "type": "string", "format": "date" },
+    "value":     { "type": "number" },
+    "source":    { "type": "string" }
+  }
+}

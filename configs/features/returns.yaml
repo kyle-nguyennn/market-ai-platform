@@ -1,0 +1,6 @@
+name: ret_1d
+version: "1"
+description: Next-day log return
+inputs: [close]
+lag: 0
+formula: "log(close / close.shift(1))"

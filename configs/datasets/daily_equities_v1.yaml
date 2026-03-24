@@ -1,0 +1,10 @@
+name: daily_equities_v1
+version: "1"
+universe: configs/datasets/daily_equities_v1.yaml
+features:
+  - ret_1d
+  - vol_20d
+  - adv_20d
+label: vol_regime_label
+label_window_days: 20
+point_in_time: true

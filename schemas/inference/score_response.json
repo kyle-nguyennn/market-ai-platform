@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScoreResponse",
+  "type": "object",
+  "required": ["symbol", "score", "model_version", "latency_ms"],
+  "properties": {
+    "symbol":          { "type": "string" },
+    "score":           { "type": "number" },
+    "model_version":   { "type": "string" },
+    "latency_ms":      { "type": "number" },
+    "fallback":        { "type": "string", "nullable": true },
+    "shadow_score":    { "type": "number", "nullable": true },
+    "feature_freshness_ts": { "type": "string", "format": "date-time" }
+  }
+}

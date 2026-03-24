@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DailyBar",
+  "type": "object",
+  "required": ["symbol", "ts", "open", "high", "low", "close", "volume"],
+  "properties": {
+    "symbol":     { "type": "string" },
+    "ts":         { "type": "string", "format": "date" },
+    "open":       { "type": "number" },
+    "high":       { "type": "number" },
+    "low":        { "type": "number" },
+    "close":      { "type": "number" },
+    "adj_close":  { "type": "number" },
+    "volume":     { "type": "integer" }
+  }
+}

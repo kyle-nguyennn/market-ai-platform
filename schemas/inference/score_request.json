@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ScoreRequest",
+  "type": "object",
+  "required": ["symbol", "as_of_ts"],
+  "properties": {
+    "symbol":           { "type": "string" },
+    "as_of_ts":         { "type": "string", "format": "date-time" },
+    "model_version":    { "type": "string" },
+    "feature_overrides":{ "type": "object" }
+  }
+}
