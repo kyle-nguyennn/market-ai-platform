@@ -6,7 +6,11 @@ from datetime import datetime
 
 from libs.common.ids import new_uuid
 from libs.common.time import utc_now
-from libs.contracts.eval_spec import EvalMetric, EvalRunRecord, EvalSpec
+from libs.contracts.eval_spec import (  # noqa: F401  # TODO: persist eval runs via EvalRunRecord
+    EvalMetric,
+    EvalRunRecord,
+    EvalSpec,
+)
 from libs.eval.drift import DriftReport
 from libs.eval.regressions import RegressionGuardResult
 

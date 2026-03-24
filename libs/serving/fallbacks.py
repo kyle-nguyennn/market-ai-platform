@@ -3,7 +3,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from libs.common.exceptions import InferenceError
+from libs.common.exceptions import (
+    InferenceError,  # noqa: F401  # TODO: raise on fallback exhaustion
+)
 from libs.storage.redis_store import RedisStore
 
 

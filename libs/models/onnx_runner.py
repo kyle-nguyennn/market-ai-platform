@@ -27,7 +27,7 @@ class ONNXRunner:
         return {"score": score, "label": int(score >= 0.5)}
 
     @classmethod
-    def from_artifact(cls, record: ModelRecord, store: ArtifactStore) -> "ONNXRunner":
+    def from_artifact(cls, record: ModelRecord, store: ArtifactStore) -> ONNXRunner:
         try:
             import onnxruntime as ort
         except ImportError as exc:

@@ -50,8 +50,7 @@ def is_event_window(
     def _flag(d: date) -> bool:
         from datetime import timedelta
         for offset in range(-window_days, window_days + 1):
-            from datetime import timedelta as td
-            check = d + td(days=offset)
+            check = d + timedelta(days=offset)
             if check in event_set:
                 return True
         return False

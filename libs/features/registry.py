@@ -1,7 +1,7 @@
 """Feature registry: maps feature names to compute functions."""
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 import polars as pl
 

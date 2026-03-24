@@ -1,12 +1,12 @@
 """Time utilities: exchange calendar helpers, period labels, timezone normalisation."""
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 
 def utc_now() -> datetime:
     """Return the current UTC datetime (timezone-aware)."""
-    return datetime.now(tz=timezone.utc)
+    return datetime.now(tz=UTC)
 
 
 def today_utc() -> date:
@@ -17,8 +17,8 @@ def today_utc() -> date:
 def as_utc(dt: datetime) -> datetime:
     """Ensure *dt* is UTC-aware; assume UTC if naive."""
     if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt.astimezone(timezone.utc)
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
 
 
 def period_label(dt: date | datetime, freq: str = "daily") -> str:

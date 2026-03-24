@@ -1,7 +1,11 @@
 """Model loading and promotion API."""
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import (  # noqa: F401  # TODO: error handling on load/promote
+    APIRouter,
+    HTTPException,
+    status,
+)
 from pydantic import BaseModel
 
 from libs.contracts.model_registry import ModelStage

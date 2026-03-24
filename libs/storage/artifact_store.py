@@ -1,8 +1,6 @@
 """Artifact store — save and load ML model artifacts from the filesystem."""
 from __future__ import annotations
 
-import io
-import os
 import pickle
 from pathlib import Path
 from typing import Any

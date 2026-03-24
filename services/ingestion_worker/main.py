@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 
 def run(start_date: date, end_date: date, universe: list[str]) -> None:
     """Ingest daily OHLCV bars for *universe* between *start_date* and *end_date*."""
-    settings = get_settings()
+    _settings = get_settings()  # TODO: use _settings.data_root for storage paths
     logger.info(
         "ingestion_start",
         start=start_date.isoformat(),

@@ -1,20 +1,20 @@
 """Pydantic contracts for model registry objects."""
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class ModelStage(str, Enum):
+class ModelStage(StrEnum):
     STAGING = "staging"
     CANARY = "canary"
     PRODUCTION = "production"
     RETIRED = "retired"
 
 
-class ModelFramework(str, Enum):
+class ModelFramework(StrEnum):
     XGBOOST = "xgboost"
     LIGHTGBM = "lightgbm"
     SKLEARN = "sklearn"

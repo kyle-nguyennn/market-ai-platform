@@ -1,11 +1,11 @@
 """Unit tests for libs/eval components."""
 from __future__ import annotations
 
-import polars as pl
+import polars as pl  # noqa: F401  # TODO: use for DataFrame-based eval assertions
 
+from libs.contracts.eval_spec import DriftConfig  # noqa: F401  # TODO: add drift config tests
 from libs.eval.metrics import accuracy, precision_recall_f1
 from libs.eval.regressions import check_regression_guards
-from libs.contracts.eval_spec import DriftConfig
 
 
 def test_accuracy_perfect():

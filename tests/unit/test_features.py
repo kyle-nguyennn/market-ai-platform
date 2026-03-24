@@ -1,9 +1,9 @@
 """Unit tests for libs/features rolling computations."""
 from __future__ import annotations
 
-import polars as pl
+import polars as pl  # noqa: F401  # TODO: use for inline DataFrame construction in tests
 
-from libs.features.rolling import ret_1d, rolling_volatility, momentum
+from libs.features.rolling import momentum, ret_1d, rolling_volatility
 
 
 def test_ret_1d_column_added(sample_bars_df):

@@ -1,12 +1,12 @@
 """Unit tests for libs/quality checks."""
 from __future__ import annotations
 
-import pytest
 import polars as pl
+import pytest
 
-from libs.quality.schema_checks import check_schema, assert_schema
-from libs.quality.null_checks import check_nulls
 from libs.common.exceptions import SchemaValidationError
+from libs.quality.null_checks import check_nulls
+from libs.quality.schema_checks import assert_schema, check_schema
 
 
 def test_check_schema_passes(sample_bars_df):

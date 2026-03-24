@@ -1,7 +1,7 @@
 """Integration tests for dataset-platform service."""
 from __future__ import annotations
 
-import pytest
+import pytest  # noqa: F401  # TODO: add parametrize and fixtures
 from fastapi.testclient import TestClient
 
 from services.dataset_platform.app.main import app

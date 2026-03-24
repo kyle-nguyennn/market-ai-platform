@@ -1,7 +1,7 @@
 """Model promotion decision API."""
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException  # noqa: F401  # TODO: validate promotion requests
 from pydantic import BaseModel
 
 from libs.contracts.model_registry import ModelStage

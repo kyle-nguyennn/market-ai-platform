@@ -23,7 +23,9 @@ _reports: dict[str, QualityReport] = {}
 async def get_quality_report(dataset_id: str) -> QualityReport:
     report = _reports.get(dataset_id)
     if report is None:
-        raise HTTPException(status_code=404, detail=f"No quality report for dataset '{dataset_id}'.")
+        raise HTTPException(
+            status_code=404, detail=f"No quality report for dataset '{dataset_id}'."
+        )
     return report
 
 

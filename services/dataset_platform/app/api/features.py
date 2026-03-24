@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 
+from libs.common.ids import new_uuid  # noqa: F401  # TODO: assign IDs on feature registration
 from libs.contracts.feature_store import FeatureDefinition
-from libs.common.ids import new_uuid
 
 router = APIRouter()
 

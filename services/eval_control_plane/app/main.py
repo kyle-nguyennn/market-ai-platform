@@ -31,7 +31,7 @@ app = FastAPI(
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
-from services.eval_control_plane.app.api import runs, drift, promotions  # noqa: E402
+from services.eval_control_plane.app.api import drift, promotions, runs  # noqa: E402
 
 app.include_router(runs.router, prefix="/eval/runs", tags=["eval-runs"])
 app.include_router(drift.router, prefix="/eval/drift", tags=["drift"])

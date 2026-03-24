@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date
+from datetime import date  # noqa: F401  # TODO: add date-range training support
 
 from libs.common.logging import configure_logging, get_logger
 

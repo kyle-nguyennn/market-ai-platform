@@ -1,7 +1,7 @@
 """Drift alert API."""
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException  # noqa: F401  # TODO: validate alert payloads
 from pydantic import BaseModel
 
 router = APIRouter()

@@ -2,20 +2,20 @@
 from __future__ import annotations
 
 from datetime import date
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class DataTier(str, Enum):
+class DataTier(StrEnum):
     RAW = "raw"
     BRONZE = "bronze"
     SILVER = "silver"
     GOLD = "gold"
 
 
-class DatasetStatus(str, Enum):
+class DatasetStatus(StrEnum):
     PENDING = "pending"
     BUILDING = "building"
     READY = "ready"

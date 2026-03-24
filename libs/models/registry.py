@@ -1,7 +1,7 @@
 """In-memory model registry: track and promote loaded models."""
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from libs.common.exceptions import ModelNotFoundError

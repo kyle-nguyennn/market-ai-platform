@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 
-from libs.contracts.eval_spec import EvalRunRecord, EvalSpec
 from libs.common.ids import new_uuid
+from libs.contracts.eval_spec import EvalRunRecord, EvalSpec
 
 router = APIRouter()
 

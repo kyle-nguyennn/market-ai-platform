@@ -28,14 +28,15 @@ class TorchRunner:
         return {"score": score, "label": int(score >= 0.5)}
 
     @classmethod
-    def from_artifact(cls, record: ModelRecord, store: ArtifactStore) -> "TorchRunner":
+    def from_artifact(cls, record: ModelRecord, store: ArtifactStore) -> TorchRunner:
         try:
-            import torch
+            import torch  # noqa: F401  # TODO: use torch.load for state dict
         except ImportError as exc:
             raise ImportError("PyTorch is required for TorchRunner.") from exc
 
-        state = store.load(record.id, record.version, filename="model.pt")
-        # Caller is expected to supply the model architecture through record.params.
+        state = store.load(record.id, record.version, filename="model.pt")  # noqa: F841
+        # TODO: load state dict into model architecture from record.params
         raise NotImplementedError(
-            "TorchRunner.from_artifact requires model architecture to be provided via record.params."
+            "TorchRunner.from_artifact requires model architecture"
+            " to be provided via record.params."
         )

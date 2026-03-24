@@ -5,8 +5,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from services.dataset_platform.app.main import app as ds_app
-from services.inference_gateway.app.main import app as ig_app
 from services.eval_control_plane.app.main import app as ecp_app
+from services.inference_gateway.app.main import app as ig_app
 
 
 @pytest.fixture(scope="module")

@@ -1,7 +1,7 @@
 """Evaluation slicing: compute metrics independently for each data slice."""
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 import polars as pl
 

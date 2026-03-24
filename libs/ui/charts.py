@@ -55,7 +55,8 @@ def drift_heatmap(drift_data: dict[str, dict[str, float]], title: str = "Feature
     import streamlit as st
 
     rows = [
-        {"Feature": feat, "PSI": info.get("psi"), "KS": info.get("ks_statistic"), "Passed": info.get("passed")}
+        {"Feature": feat, "PSI": info.get("psi"),
+         "KS": info.get("ks_statistic"), "Passed": info.get("passed")}
         for feat, info in drift_data.items()
     ]
     drift_df = pl.DataFrame(rows)

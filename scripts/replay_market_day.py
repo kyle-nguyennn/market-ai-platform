@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 from datetime import date
 
-import polars as pl
+import polars as pl  # noqa: F401  # TODO: use for loading gold-tier parquet data
 
 from libs.common.logging import configure_logging, get_logger
 from libs.common.settings import get_settings
@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 
 
 def replay(replay_date: date, universe: list[str], model_name: str) -> None:
-    settings = get_settings()
+    _settings = get_settings()  # TODO: use _settings.data_root for ParquetStore
     logger.info("replay_start", date=replay_date.isoformat(), symbols=len(universe))
 
     # Step 1: Load gold-tier data for replay_date

@@ -31,7 +31,7 @@ app = FastAPI(
 metrics_app = make_asgi_app()
 app.mount("/metrics", metrics_app)
 
-from services.inference_gateway.app.api import score, models  # noqa: E402
+from services.inference_gateway.app.api import models, score  # noqa: E402
 
 app.include_router(score.router, prefix="/score", tags=["score"])
 app.include_router(models.router, prefix="/models", tags=["models"])

@@ -3,8 +3,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
 
-from libs.contracts.dataset import DatasetRecord, DatasetSpec
 from libs.common.ids import new_uuid
+from libs.contracts.dataset import DatasetRecord, DatasetSpec
 
 router = APIRouter()
 

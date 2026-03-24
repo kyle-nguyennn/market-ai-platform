@@ -1,15 +1,16 @@
 """Shared pytest fixtures."""
 from __future__ import annotations
 
-import pytest
 import polars as pl
+import pytest
 
 
 @pytest.fixture
 def sample_bars_df() -> pl.DataFrame:
     """A minimal daily OHLCV DataFrame for unit tests."""
-    import numpy as np
     from datetime import date, timedelta
+
+    import numpy as np
 
     n = 30
     base = date(2023, 1, 2)

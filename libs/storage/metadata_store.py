@@ -1,8 +1,8 @@
 """Postgres metadata store using SQLAlchemy Core (async-friendly session factory)."""
 from __future__ import annotations
 
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker

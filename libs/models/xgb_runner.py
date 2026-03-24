@@ -34,7 +34,7 @@ class XGBRunner:
         return [{"score": float(p), "label": int(p >= 0.5)} for p in probas]
 
     @classmethod
-    def from_artifact(cls, record: ModelRecord, store: ArtifactStore) -> "XGBRunner":
+    def from_artifact(cls, record: ModelRecord, store: ArtifactStore) -> XGBRunner:
         booster = store.load(record.id, record.version, filename="model.ubj")
         feature_names = record.params.get("feature_names", [])
         return cls(booster, feature_names)

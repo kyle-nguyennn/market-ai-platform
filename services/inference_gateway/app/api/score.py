@@ -4,7 +4,10 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from libs.common.exceptions import InferenceError, ModelNotFoundError
+from libs.common.exceptions import (  # noqa: F401  # TODO: catch in scoring
+    InferenceError,
+    ModelNotFoundError,
+)
 
 router = APIRouter()
 
