@@ -32,7 +32,7 @@ ui/             Streamlit ops dashboard
 ## Prerequisites
 
 - **Docker** and **Docker Compose** (v2)
-- **Micromamba** — [install guide](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html)
+- **Mamba** (via [Miniforge](https://github.com/conda-forge/miniforge#mambaforge))
 - NVIDIA GPU + driver ≥ 525 (optional; required for GPU-accelerated training/inference)
 
 ---
@@ -57,10 +57,10 @@ git clone <repo-url> && cd market-ai-platform
 
 ```bash
 # Create the mamba environment
-micromamba env create -f environment.yml --yes
+mamba env create -f environment.yml --yes
 
 # Activate it
-micromamba activate market-ai
+mamba activate market-ai
 
 # Editable install of libs/*
 pip install --no-deps -e .
@@ -78,7 +78,7 @@ docker compose up -d postgres redis
 
 ```bash
 # Activate the environment (every new terminal)
-micromamba activate market-ai
+mamba activate market-ai
 
 # Start all services (Postgres, Redis, Prometheus, Grafana, 3 FastAPI apps)
 make up
@@ -119,15 +119,15 @@ Notebooks share the same `market-ai` environment, so PyTorch GPU, all ML libs, a
 make test
 
 # Run specific test directories
-micromamba run -n market-ai pytest tests/unit/ -v
-micromamba run -n market-ai pytest tests/integration/ -v
-micromamba run -n market-ai pytest tests/e2e/ -v
+mamba run -n market-ai pytest tests/unit/ -v
+mamba run -n market-ai pytest tests/integration/ -v
+mamba run -n market-ai pytest tests/e2e/ -v
 
 # Run tests for a single module
-micromamba run -n market-ai pytest tests/unit/test_features.py -v
+mamba run -n market-ai pytest tests/unit/test_features.py -v
 
 # Run with coverage (if pytest-cov is installed)
-micromamba run -n market-ai pytest tests/ --cov=libs --cov-report=term-missing
+mamba run -n market-ai pytest tests/ --cov=libs --cov-report=term-missing
 ```
 
 ### Linting
@@ -135,10 +135,10 @@ micromamba run -n market-ai pytest tests/ --cov=libs --cov-report=term-missing
 ```bash
 make lint
 # or
-micromamba run -n market-ai ruff check .
+mamba run -n market-ai ruff check .
 
 # Auto-fix
-micromamba run -n market-ai ruff check . --fix
+mamba run -n market-ai ruff check . --fix
 ```
 
 ---

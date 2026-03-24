@@ -1,12 +1,12 @@
-.PHONY: help env up down test lint build
+.PHONY: help env up down test lint lint-fix build
 
-RUN = micromamba run -n market-ai
+RUN = mamba run -n market-ai
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
 
 env: ## Create / update the mamba environment
-	micromamba env create -f environment.yml --yes || micromamba update -f environment.yml --yes
+	mamba env create -f environment.yml --yes || mamba env update -f environment.yml --yes
 	$(RUN) pip install --no-deps -e .
 
 up: ## Start local docker-compose stack
@@ -21,5 +21,8 @@ test: ## Run all tests
 lint: ## Run linter
 	$(RUN) ruff check .
 
+lint-fix: ## Run linter with auto-fix
+	$(RUN) ruff check . --fix
+
 build: ## Build all docker images
-docker compose build
+	docker compose build

@@ -4,13 +4,13 @@ set -euo pipefail
 
 echo "==> Checking prerequisites..."
 command -v docker     >/dev/null || { echo "Docker is required."; exit 1; }
-command -v micromamba >/dev/null || { echo "Micromamba is required: https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html"; exit 1; }
+command -v mamba >/dev/null || { echo "Mamba is required. Install via Miniforge: https://github.com/conda-forge/miniforge#mambaforge"; exit 1; }
 
 echo "==> Creating mamba environment..."
-micromamba env create -f environment.yml --yes || micromamba update -f environment.yml --yes
+mamba env create -f environment.yml --yes || mamba env update -f environment.yml --yes
 
 echo "==> Installing project in editable mode..."
-micromamba run -n market-ai pip install --no-deps -e .
+mamba run -n market-ai pip install --no-deps -e .
 
 echo "==> Copying .env.example to .env (if not already present)..."
 [ -f .env ] || cp .env.example .env

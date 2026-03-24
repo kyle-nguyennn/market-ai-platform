@@ -3,7 +3,7 @@
 set -euo pipefail
 
 echo "==> Generating sample data..."
-micromamba run -n market-ai python - <<'EOF'
+mamba run -n market-ai python - <<'EOF'
 import polars as pl
 import numpy as np
 from datetime import date, timedelta

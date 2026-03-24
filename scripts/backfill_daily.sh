@@ -7,7 +7,7 @@ START=${1:-"2020-01-01"}
 END=${2:-$(date +%Y-%m-%d)}
 
 echo "==> Backfilling daily bars from $START to $END..."
-micromamba run -n market-ai python -m services.ingestion_worker.main \
+mamba run -n market-ai python -m services.ingestion_worker.main \
   --start "$START" \
   --end   "$END"   \
   --universe SPY QQQ IWM GLD TLT EFA EEM XLF XLE XLV XLK XLI XLP XLU
