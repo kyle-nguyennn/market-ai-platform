@@ -42,7 +42,7 @@ Remove the `build` job. Add a lightweight `docker compose build` smoke-check sco
   2. `kubectl set image` with the immutable `sha-{sha}` tag.
   3. `kubectl rollout status --timeout=5m` to confirm successful rollout.
   4. **Auto-rollback** (`if: failure()`): `kubectl rollout undo deployment/{service}`.
-  5. Health check via `curl -f http://{service}-svc/health` after rollout.
+  5. Post-rollout health check executed **from within the cluster** (for example, `kubectl run rollout-healthcheck --rm -i --restart=Never --image=curlimages/curl -- curl -f http://{service}-svc/health`). If instead you want to `curl` from the GitHub Actions runner, you must either use a self-hosted runner with VPC access to the cluster or expose the service via an Ingress/LoadBalancer and curl that external URL.
 
 ### 4. `rollback.yml` (new — manual rollback via `workflow_dispatch`)
 
