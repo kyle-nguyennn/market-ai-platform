@@ -5,15 +5,15 @@
 **Context:** The current `ci.yml` runs lint, test, and a single `docker compose build` for all services together on every push and pull request. As the platform grows to three independently deployable services, this creates problems:
 
 - A change to `services/dataset_platform/` triggers unnecessary rebuilds of the other two services.
-- There is no automated path from a merged commit to a running pre-prod environment.
-- There is no rollback mechanism when a bad deploy reaches pre-prod.
+- There is no automated path from a merged commit to a running preprod environment.
+- There is no rollback mechanism when a bad deploy reaches preprod.
 
 **Decision:** Split the monolithic `ci.yml` into four focused workflows and add Kubernetes manifests for EKS.
 
 **Consequences:**
 
 - CI runs faster and more efficiently by avoiding unnecessary image builds for unaffected services.
-- There is an automated path from merged commits to a running pre-prod environment on EKS.
+- There is an automated path from merged commits to a running preprod environment on EKS.
 - Rollbacks become first-class operations via automated rollback on failed rollouts and a dedicated manual rollback workflow.
 - Operational complexity increases slightly due to multiple workflows and Kubernetes manifests that must be maintained.
 
@@ -32,7 +32,7 @@ Remove the `build` job. Add a lightweight `docker compose build` smoke-check sco
   - `{user}/{service}:preprod` — floating, convenient for manual pulls.
 - Layer caching via GitHub Actions cache (`type=gha`).
 
-### 3. `deploy-preprod.yml` (new — deploy to AWS EKS pre-prod)
+### 3. `deploy-preprod.yml` (new — deploy to AWS EKS preprod)
 
 - Triggered automatically via `workflow_run` on completion of `build-push.yml`.
 - Also triggerable manually via `workflow_dispatch` with a `service` input for targeted re-deploys.
@@ -60,7 +60,7 @@ One `Deployment` + `Service` YAML per service:
 | `eval-control-plane.yaml` | eval-control-plane | 8003 |
 
 Common manifest properties:
-- `replicas: 2` for pre-prod availability.
+- `replicas: 2` for preprod availability.
 - `strategy: RollingUpdate` (maxUnavailable: 1, maxSurge: 1).
 - Liveness + readiness probes on `/health`.
 - Image field defaults to `{user}/{service}:preprod`; deploy workflow overrides with the sha tag.
@@ -84,7 +84,7 @@ Common manifest properties:
 ## Consequences
 
 - Changed services build and deploy independently — unchanged services are never rebuilt on unrelated commits.
-- Every merge to `main` that changes service code automatically deploys to pre-prod within the same pipeline run.
+- Every merge to `main` that changes service code automatically deploys to preprod within the same pipeline run.
 - Failed rollouts self-recover; human intervention is only needed when the auto-rollback itself fails.
 - The `sha-{sha}` image tag creates a direct link between a Git commit and a running container for auditability.
 
