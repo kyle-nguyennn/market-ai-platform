@@ -2,21 +2,20 @@
 
 **Status:** Proposed
 
----
-
-## Context
-
-The current `ci.yml` runs lint, test, and a single `docker compose build` for all services together on every push and pull request. As the platform grows to three independently deployable services, this creates problems:
+**Context:** The current `ci.yml` runs lint, test, and a single `docker compose build` for all services together on every push and pull request. As the platform grows to three independently deployable services, this creates problems:
 
 - A change to `services/dataset_platform/` triggers unnecessary rebuilds of the other two services.
 - There is no automated path from a merged commit to a running pre-prod environment.
 - There is no rollback mechanism when a bad deploy reaches pre-prod.
 
----
+**Decision:** Split the monolithic `ci.yml` into four focused workflows and add Kubernetes manifests for EKS.
 
-## Decision
+**Consequences:**
 
-Split the monolithic `ci.yml` into four focused workflows and add Kubernetes manifests for EKS.
+- CI runs faster and more efficiently by avoiding unnecessary image builds for unaffected services.
+- There is an automated path from merged commits to a running pre-prod environment on EKS.
+- Rollbacks become first-class operations via automated rollback on failed rollouts and a dedicated manual rollback workflow.
+- Operational complexity increases slightly due to multiple workflows and Kubernetes manifests that must be maintained.
 
 ### 1. `ci.yml` (updated — lint + test on PRs)
 
