@@ -1,0 +1,57 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml', 'environment.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+
+      - name: Install package and test extras
+        run: |
+          micromamba run -n market-ai pip install --no-deps -e .
+          micromamba run -n market-ai pip install pytest pytest-xdist pytest-cov
+
+      - name: Run tests (parallel)
+        run: |
+          mkdir -p reports
+          micromamba run -n market-ai pytest -n auto --junitxml=reports/junit.xml --cov=./ --cov-report=xml:coverage.xml --cov-report=html:htmlcov tests/ -v
+
+      - name: Upload JUnit XML
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-junit
+          path: reports/junit.xml
+
+      - name: Upload coverage xml
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+      - name: Upload coverage html
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: htmlcov
