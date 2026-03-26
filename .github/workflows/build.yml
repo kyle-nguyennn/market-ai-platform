@@ -14,24 +14,35 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    outputs:
-      built: true
+    strategy:
+      matrix:
+        service:
+          - name: dataset-platform
+            dockerfile: infra/docker/dataset-platform.Dockerfile
+          - name: eval-control-plane
+            dockerfile: infra/docker/eval-control-plane.Dockerfile
+          - name: inference-gateway
+            dockerfile: infra/docker/inference-gateway.Dockerfile
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+        # QEMU enables emulation of non-native CPU architectures (e.g., ARM) on x86 runners,
+        # which is required when building multi-platform images with Buildx.
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        # Buildx is the extended Docker build client that enables multi-platform builds,
+        # and allows exporting/importing layer caches to/from GitHub Actions cache (type=gha).
 
-      - name: Build (use GitHub Actions cache)
+      - name: Build ${{ matrix.service.name }}
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ${{ matrix.service.dockerfile }}
           push: false
-          tags: helloworld141/market-ai:latest
+          tags: quantpiece/${{ matrix.service.name }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -41,6 +52,15 @@ jobs:
     permissions:
       contents: read
     if: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+    strategy:
+      matrix:
+        service:
+          - name: dataset-platform
+            dockerfile: infra/docker/dataset-platform.Dockerfile
+          - name: eval-control-plane
+            dockerfile: infra/docker/eval-control-plane.Dockerfile
+          - name: inference-gateway
+            dockerfile: infra/docker/inference-gateway.Dockerfile
     steps:
       - uses: actions/checkout@v4
 
@@ -57,15 +77,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push image to Docker Hub
+      - name: Build and push ${{ matrix.service.name }} to Docker Hub
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ${{ matrix.service.dockerfile }}
           push: true
           tags: |
-            helloworld141/market-ai:${{ github.sha }}
-            helloworld141/market-ai:latest
+            quantpiece/${{ matrix.service.name }}:${{ github.sha }}
+            quantpiece/${{ matrix.service.name }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
