@@ -32,8 +32,7 @@ jobs:
 
       - name: Install package and test extras
         run: |
-          micromamba run -n market-ai pip install --no-deps -e .
-          micromamba run -n market-ai pip install pytest pytest-xdist pytest-cov
+          micromamba run -n market-ai pip install -e ".[test]"
 
       - name: Run tests (parallel)
         run: |
