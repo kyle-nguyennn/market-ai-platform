@@ -1,0 +1,32 @@
+name: Build dataset-platform
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    uses: ./.github/workflows/_build-service.yml
+    permissions:
+      contents: read
+    with:
+      service-name: dataset-platform
+      dockerfile: infra/docker/dataset-platform.Dockerfile
+      watch-paths: |
+        service:
+          - 'environment.yml'
+          - 'pyproject.toml'
+          - 'libs/**'
+          - 'services/dataset_platform/**'
+          - 'infra/docker/dataset-platform.Dockerfile'
+      force-build: ${{ github.event_name == 'workflow_dispatch' && 'true' || 'false' }}
+    secrets: inherit
+
