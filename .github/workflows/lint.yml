@@ -1,0 +1,29 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: environment.yml
+          cache-environment: true
+      - name: Run ruff
+        run: micromamba run -n market-ai ruff check .
+
+# Optional permissive black check is intentionally omitted to avoid redundancy with ruff.
+# If you prefer a strict black --check, we can re-add the following step:
+#      - name: Run black check
+#        run: micromamba run -n market-ai black --check .
