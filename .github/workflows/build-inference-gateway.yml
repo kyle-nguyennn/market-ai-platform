@@ -1,0 +1,32 @@
+name: Build inference-gateway
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    uses: ./.github/workflows/_build-service.yml
+    permissions:
+      contents: read
+    with:
+      service-name: inference-gateway
+      dockerfile: infra/docker/inference-gateway.Dockerfile
+      watch-paths: |
+        service:
+          - 'environment.yml'
+          - 'pyproject.toml'
+          - 'libs/**'
+          - 'services/inference_gateway/**'
+          - 'infra/docker/inference-gateway.Dockerfile'
+      force-build: ${{ github.event_name == 'workflow_dispatch' && 'true' || 'false' }}
+    secrets: inherit
+
