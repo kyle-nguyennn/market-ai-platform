@@ -1,0 +1,44 @@
+name: AlphaNova P5 Regime Submission Validation
+on:
+  push:
+    branches: [feat/alphanova-p0-p1]
+    paths:
+      - "competitions/alphanova/submissions/disagreement_regime_p5.py"
+      - "competitions/alphanova/tests/test_p5_submission.py"
+      - ".github/workflows/alphanova-p5-submission.yml"
+  workflow_dispatch:
+jobs:
+  official-regime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install packages
+        run: python -m pip install numpy pandas pyarrow matplotlib pytest
+      - name: Test P5 submission
+        run: python -m pytest competitions/alphanova/tests/test_p5_submission.py -q
+      - name: Fetch training data and gauge objects
+        run: |
+          git lfs install --local
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/**" --exclude=""
+      - name: Official runner tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p competitions/alphanova/results/ci-p5-submission
+          cd external/alphanova-2026-cycle4
+          candidate=../../competitions/alphanova/submissions/disagreement_regime_p5.py
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py "$candidate" | tee ../../competitions/alphanova/results/ci-p5-submission/quick.log
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py "$candidate" --full | tee ../../competitions/alphanova/results/ci-p5-submission/full.log
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py "$candidate" --gauge-fix | tee ../../competitions/alphanova/results/ci-p5-submission/gauge.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p5-standalone-official
+          path: competitions/alphanova/results/ci-p5-submission/
+          if-no-files-found: warn
