@@ -156,3 +156,64 @@ A previous fixed, evenly-spaced **three-period** sample (001, 016, 031) yielded 
 **Decision:** None of these P1 implementations has a positive local full-history edge. Do not submit them as-is. Since gross Sharpe is already negative, further smoothing alone cannot produce convincing alpha. Keep span 120 as a controlled reference and spend subsequent P1 iterations on substantially stronger cross-sectional predictive structure. Candidate ideas: univariate/difference/interaction ablations, regularized polynomial or spline features, feature-conditioned rank relationships, then low-capacity nonlinear ensemble. Apply unchanged 31-period backtests, nonoverlap checks and overfitting-gate constraints; avoid selecting models from one lucky period.
 
 Global repository lint remains failing on pre-existing files including the untouched upstream `external/` kit; this P0/P1 implementation was independently validated by its synthetic CI and research workflow. The branch remains a **draft PR**, pending a model with credible edge.
+
+
+## P1 full-history gate: completed 2026-10-14
+
+The 31-period CI run 38576305259 completed successfully, including exact pipeline-vs-official parity to printed rounding precision (our baseline net Sharpe -0.01526; official printed -0.0153; original prior log -0.0155 due to environment versions).
+
+| Candidate | Full gross Sharpe | Full net Sharpe | Nonoverlapping net Sharpe |
+| --- | ---: | ---: | ---: |
+| XGB interaction | -0.00123 | -0.01483 | -0.01280 |
+| Upstream baseline | -0.00171 | -0.01526 | -0.01332 |
+| Ridge | -0.00347 | -0.01744 | -0.01602 |
+
+**Interpretation:** negative gross PnL means lack of robust predictive alpha, even before costs. The latest-period positive results and 001/016/031 sampled results were not representative. Do not promote these P1 candidates for submission.
+
+## P2 — Turnover-aware position construction
+
+Code:
+- `research/positions.py` contains a causal L1 no-trade band and partial rebalancing controller. A no-trade decision compares the current desired 20-asset vector with the **last held** vector, not next-period returns.
+- `research/run_p2.py` fits each P1 model once per period, then applies all turnover controls to the same inferred signal, avoiding retraining for every policy.
+- `configs/p2_grid.json` freezes initial models, EWM spans (120 and 240), absolute L1 trade bands (0, 0.005, 0.02), and partial rebalancing fractions (1.0, 0.5).
+
+The outputs include gross/net Sharpe, cost drag, non-overlapping novel-history metrics, rebalancing frequency, training and inference runtimes and model configuration. Large grids are exploratory and **do not** constitute independent out-of-sample validation.
+
+Tasks:
+- [x] Causal no-trade and partial-rebalance policy.
+- [x] Neutrality, finite-output and prefix-invariance tests.
+- [x] Full-walk-forward P2 experiment workflow with Git LFS.
+- [ ] Review full 31-period P2 results; identify whether turnover control can improve net Sharpe without degrading gross signal.
+- [ ] Check robustness on a frozen chronological validation segment not used for further tuning.
+- [ ] Do not interpret improved net Sharpe with still-negative gross Sharpe as learned alpha.
+
+Run:
+
+```bash
+python -m competitions.alphanova.research.run_p2 --scope full \
+  --output-dir competitions/alphanova/results/p2-full
+```
+
+## P3 — Submission hardening (experimental candidate)
+
+The provisional `submissions/turnover_xgb_v1.py` is a **single-file, self-contained** `Predictor` using the P1 same-hour XGBoost interaction design and a default L1 no-trade band. It is **not** a promoted or recommended submission: P1 gross performance is negative and P2 remains exploratory.
+
+Contract checks in `tests/test_hardening.py`:
+- AST-level structure checks: module docstring, imports and a single Predictor class only; no module-level training/data reads.
+- No forbidden backward fills, shifted future labels, centered rolling windows or circular roll calls in the submission source.
+- Market-neutral 20-asset outputs with finite values.
+- Prefix invariance of predict() against future append (causality).
+- Inference may overlap train data; a permuted row order retrain does not crash.
+- Deterministic serialized/pickled model reloading.
+- Ticker-order equivariance and tolerance of NaN/inf feature inputs.
+
+Server-side gate still cannot be reproduced by the local runner, especially its shuffled-label overfitting null and private execution adjustments. Tests here do **not** certify acceptance.
+
+Tasks:
+- [x] Implement and test standalone Predictor candidate.
+- [x] Add full official runner and `--gauge-fix` job to CI.
+- [ ] Inspect actual full-run, novelty and serialization results from CI.
+- [ ] Run a static scan of submitted file before upload, as the official checker scans comments too.
+- [ ] Final sign-off requires **positive gross and net walk-forward Sharpe**, non-overlap stability and novelty; otherwise reject candidate.
+
+The final package always contains only the selected `.py` file; no local research module imports or changed upstream kit modules.
