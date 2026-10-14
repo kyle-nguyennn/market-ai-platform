@@ -61,6 +61,7 @@ def analyze_period(period: str, data_dir: Path, config: dict, phase: str) -> lis
             "train_rows": n_train - int(config["embargo_rows"]),
             "val_rows": n_val,
             "global_beta": model.beta_global,
+            "train_slope": model.beta_global,
             "low_beta": model.beta_low,
             "high_beta": model.beta_high,
             "regime_threshold": model.threshold,
