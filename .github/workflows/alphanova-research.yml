@@ -129,3 +129,52 @@ jobs:
           name: alphanova-p0-p1-full
           path: competitions/alphanova/results/ci-full/
           if-no-files-found: warn
+
+  p2-p3-full-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: synthetic-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CPU research and validation dependencies
+        run: |
+          python -m pip install numpy pandas scikit-learn xgboost matplotlib pyarrow
+      - name: Materialize training data and gauge matrices from Git LFS
+        run: |
+          git lfs install --local
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/**" --exclude=""
+          python - <<'PY'
+          from pathlib import Path
+          import numpy as np
+          import pandas as pd
+          root = Path("external/alphanova-2026-cycle4/data/train")
+          assert len(list(root.glob("*.small.features.parquet"))) == 31
+          assert len(list((root / "gauge").glob("*.small.gauge.npy"))) == 31
+          print("Latest features:", pd.read_parquet(root / "031.small.features.parquet").shape)
+          print("Latest gauge:", np.load(root / "gauge/031.small.gauge.npy").shape)
+          PY
+      - name: P2 no-trade and partial rebalancing full walk-forward
+        run: |
+          python -m competitions.alphanova.research.run_p2 \
+            --scope full \
+            --output-dir competitions/alphanova/results/ci-p2-full
+      - name: P3 official standalone predictor validation
+        run: |
+          cd external/alphanova-2026-cycle4
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/turnover_xgb_v1.py --full \
+            | tee ../../competitions/alphanova/results/ci-p2-full/p3_official_full.log
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/turnover_xgb_v1.py --gauge-fix \
+            | tee ../../competitions/alphanova/results/ci-p2-full/p3_gauge_fix.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p2-p3-full
+          path: competitions/alphanova/results/ci-p2-full/
+          if-no-files-found: warn
