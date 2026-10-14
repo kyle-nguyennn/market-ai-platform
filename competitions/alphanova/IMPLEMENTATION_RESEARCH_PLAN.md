@@ -238,3 +238,32 @@ Provisional `turnover_xgb_v1.py` P3 official full runner:
 `submissions/candidate_p3.py` now packages the **measured best P2 configuration** as one standalone Predictor subclass. `tests/test_candidate_p3.py` verifies parity with the upstream model followed by `research.positions.position_policy`, causality, serialized inference, ticker equivariance, and overlapping inference. CI additionally executes its standalone full runner and gauge metrics, which must be checked before any use.
 
 **Decision:** No competition submission from the current model family. Neither negative net Sharpe nor <60° city novelty meets internal promotion requirements. Next research work should seek independent predictive structure in the six input features; further smoothing sweeps alone are unlikely to supply alpha. Treat this P3 file as a reproducibility artifact and ready-to-change packaging template.
+
+
+## P4 — Anonymous-feature discovery (completed, 2026-10-14)
+
+A prespecified catalog of **48 contemporaneous cross-sectional factors** (6 ranks, 6 clipped z-scores, 15 ranked pair differences, 15 rank products, 6 cubic tails) was screened on 7 spaced discovery periods. Top 6 were frozen *before* evaluating 4 later confirmation periods. See `research/FEATURE_DISCOVERY.md` and `configs/p4_factors.json` for the exact protocol.
+
+Selected discovery → confirmation net Sharpes:
+- `rank_1`: +0.00783 → +0.01540; confirmation target IC +0.08622.
+- `diff_3_6`: +0.00776 → +0.01515; confirmation target IC +0.08459.
+- `z_6`: +0.00956 → +0.00813; `rank_6`: +0.01568 → +0.00307.
+- `tail_6`: +0.01577 → +0.00298; `diff_1_2`: +0.01226 → 0.00000.
+
+Standalone submissions for rank1, diff36 and a fixed-weight 50/50 ensemble passed contract and policy parity tests. **All 31-period official local walk-forward and gauge evaluations completed successfully**:
+
+| Candidate | Full-history net Sharpe | Target IC | City novelty | Decision |
+| --- | ---: | ---: | ---: | --- |
+| `factor_rank1_p4.py` | **+0.0050** | +0.0185 | 58.6° | Leading *experimental* candidate |
+| `factor_diff36_p4.py` | +0.0045 | +0.0185 | 58.0° | Fallback hypothesis |
+| `factor_blend_p4.py` | +0.0046 | +0.0195 | 59.4° | More novel but weaker Sharpe than rank1 |
+
+The rank1 factor has 15 positive, 10 negative and 6 zero period Sharpes in the printed official 31-period runner logs. The two single-factor strategies' *period-level Sharpe* sequences correlate approximately 0.982, indicating little observed regime diversification; this is **not** the official pairwise signal correlation admission metric.
+
+- [P4 discovery CI](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38581694045)
+- [Official full-history rank1/diff36](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38582412074)
+- [Full-history blend and component retest](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38583089218)
+
+**Caveats / no automatic submission:** This Sharpe is small and likely fragile to sampling error. Confirmation periods were already used in previous modeling experiments; the entire 31-period history has been inspected. Novelty angles are below the preferred 60° proxy, although official admission is based on absolute time-averaged pairwise correlation ≤0.5 (not city angle). The hidden shuffled-label overfitting gate has not been run or reproduced. The kit's unknown target horizon means the chosen 168-hour embargo is a sensitivity precaution, not a guaranteed full purge.
+
+Next: freeze rank1 as research leader; test stability in later genuinely unseen data or external live competition feedback **only when a user explicitly authorizes submission**. If continuing model research, seek **orthogonal** features/conditional effects rather than parameter-sweeping rank1 and diff36 on the already-used history.

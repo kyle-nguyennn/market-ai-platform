@@ -79,3 +79,25 @@ If all factors fail, stop searching increasingly complicated parameter
 grids and study feature-target relationships/regime instability before
 building more models. Do not manufacture a positive score by reporting
 the maximum among 48 experiments.
+
+
+## Measured findings — 2026-10-14
+
+The screen ran successfully on actual Git LFS binary panels. The top two confirmation leads were `rank_1` (net Sharpe +0.01540, IC +0.08622) and `diff_3_6` (+0.01515, IC +0.08459), but only 2 of the 4 confirmation periods had positive net Sharpe for each. The earliest discovery leaders `tail_6` and `rank_6` weakened considerably in confirmation, an example of selection instability.
+
+The selected factor families were packaged as single-file predictors with the **same fixed training and turnover settings** as the research screen. Full 31-period official evaluator:
+
+| Predictor | Full net Sharpe | Gauge IC | City novelty |
+| --- | ---: | ---: | ---: |
+| Feature.1 cross-sectional rank | +0.0050 | +0.0185 | 58.6° |
+| Rank of Feature.3 minus Feature.6 | +0.0045 | +0.0185 | 58.0° |
+| Fixed 50/50 equal-weight blend | +0.0046 | +0.0195 | 59.4° |
+
+The blend increased city novelty but did not improve Sharpe. The two individual predictors' period-level Sharpe vectors correlate approximately 0.982 (not the same as trajectory correlation), suggesting substantial shared regime dependence. The observed IC is positive but small. Only 15 of the 31 rank1 period evaluations were positive; 10 were negative and 6 flat.
+
+Source runs:
+- [Factor screen, frozen discovery/confirmation](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38581694045)
+- [Official single-factor scoring](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38582412074)
+- [Official fixed-weight ensemble](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38583089218)
+
+**Result:** First positive *historical* AlphaNova net Sharpe candidates, but no established stable alpha or server-side gate acceptance. No hidden/live submission has been made. The next research branch should target factor conditional structure genuinely different from these two highly similar profiles.
