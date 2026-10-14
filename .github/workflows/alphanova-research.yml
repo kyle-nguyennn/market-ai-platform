@@ -56,6 +56,27 @@ jobs:
             --scope latest \
             --data-dir external/alphanova-2026-cycle4/data/train \
             --output-dir competitions/alphanova/results/ci-latest
+      - name: Fetch earliest and middle AlphaNova LFS periods
+        run: |
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/001.small.*,external/alphanova-2026-cycle4/data/train/016.small.*" --exclude=""
+          python - <<'PY'
+          import pandas as pd
+          for key in ("001", "016"):
+              path = f"external/alphanova-2026-cycle4/data/train/{key}.small.features.parquet"
+              print(key, pd.read_parquet(path).shape)
+          PY
+      - name: Sampled multi-period P0 P1 robustness
+        run: |
+          python -m competitions.alphanova.research.run_experiments \
+            --scope full --period-keys 001 016 031 --spans 120 --signs 1 \
+            --data-dir external/alphanova-2026-cycle4/data/train \
+            --output-dir competitions/alphanova/results/ci-sampled
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p0-p1-sampled
+          path: competitions/alphanova/results/ci-sampled/
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         if: always()
         with:
