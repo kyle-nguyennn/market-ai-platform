@@ -1,0 +1,48 @@
+Processing submission: demo_engineered.py
+Mode: full walk-forward
+============================================================
+⚠ About to pip-install from submission metadata: xgboost>=3.2.0
+  (set COMP6_DISABLE_PIP_INSTALL=1 to disable this for safety)
+Loaded predictor class: EngineeredXGBoostPredictor
+Walk-forward full: 31 periods, gauge_fix=False
+Validation: min(800, 20%) per period
+NOTE: These are validation-set statistics. Test-set results will differ.
+============================================================
+  [001] 800 val rows, Sharpe=+0.0623, 1.1s
+  [002] 800 val rows, Sharpe=-0.0575, 0.9s
+  [003] 800 val rows, Sharpe=-0.0492, 1.0s
+  [004] 800 val rows, Sharpe=-0.0235, 1.0s
+  [005] 800 val rows, Sharpe=-0.0832, 1.0s
+  [006] 800 val rows, Sharpe=-0.0124, 0.9s
+  [007] 800 val rows, Sharpe=-0.0782, 0.9s
+  [008] 800 val rows, Sharpe=-0.0505, 1.0s
+  [009] 800 val rows, Sharpe=-0.0134, 1.1s
+  [010] 800 val rows, Sharpe=+0.0027, 0.9s
+  [011] 800 val rows, Sharpe=-0.0266, 1.0s
+  [012] 800 val rows, Sharpe=-0.0188, 0.9s
+  [013] 800 val rows, Sharpe=+0.0122, 1.0s
+  [014] 800 val rows, Sharpe=-0.0223, 1.1s
+  [015] 800 val rows, Sharpe=+0.0231, 0.9s
+  [016] 800 val rows, Sharpe=-0.0303, 1.1s
+  [017] 800 val rows, Sharpe=-0.0252, 1.1s
+  [018] 800 val rows, Sharpe=+0.0169, 1.1s
+  [019] 800 val rows, Sharpe=-0.0576, 1.1s
+  [020] 800 val rows, Sharpe=-0.0503, 1.2s
+  [021] 800 val rows, Sharpe=-0.0462, 1.1s
+  [022] 800 val rows, Sharpe=+0.0072, 1.2s
+  [023] 800 val rows, Sharpe=+0.0305, 1.2s
+  [024] 800 val rows, Sharpe=-0.0051, 1.2s
+  [025] 800 val rows, Sharpe=-0.0289, 1.3s
+  [026] 800 val rows, Sharpe=-0.0053, 1.3s
+  [027] 800 val rows, Sharpe=+0.0457, 1.3s
+  [028] 800 val rows, Sharpe=-0.0029, 1.5s
+  [029] 800 val rows, Sharpe=-0.0314, 1.4s
+  [030] 800 val rows, Sharpe=+0.0229, 1.3s
+  [031] 800 val rows, Sharpe=+0.0068, 0.9s
+============================================================
+Overall Sharpe: -0.0155
+Periods: 31, Observations: 24800
+
+NOTE: These are validation-set statistics. Test-set results will differ.
+
+Results written to results.csv

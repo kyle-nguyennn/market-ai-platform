@@ -38,7 +38,7 @@ dependencies:
   - pytables>=3.9
 
   # --- ML ---
-  - xgboost>=2.0
+  - xgboost>=3.2.0
   - lightgbm
   - scikit-learn
   - onnxruntime

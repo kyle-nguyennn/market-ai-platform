@@ -1,0 +1,21 @@
+Processing submission: demo_engineered.py
+Mode: latest period
+============================================================
+⚠ About to pip-install from submission metadata: xgboost>=3.2.0
+  (set COMP6_DISABLE_PIP_INSTALL=1 to disable this for safety)
+Loaded predictor class: EngineeredXGBoostPredictor
+Available periods: 31 (001 to 031)
+Using latest period: 031
+Total rows: 50815
+Training rows: 50015
+Validation rows: 800 (min(800, 20%))
+============================================================
+Trained in 1.6s
+Predicted in 0.0s
+Cross-sectional de-mean check: PASS
+
+Validation Sharpe: 0.0068
+Equity: start=0.0000, end=0.0004
+Max drawdown from peak: -0.0014
+
+Results written to results.csv
