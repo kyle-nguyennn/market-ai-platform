@@ -35,3 +35,50 @@ python -m competitions.alphanova.research.run_p5b_regimes
 ```
 
 Promotion requires material positive gross and net walk-forward performance, stability beyond a few periods, and ultimately passing the server's proprietary overfitting test. A null-test rejection is evidence against the hypothesis, not a reason to repeatedly resweep the same history.
+
+
+## Completed measurements — 2026-10-14
+
+### P5-A training-block null (CI 38589454790)
+
+| Period | Training target IC | OLS beta | Empirical two-sided p | Stable beta-sign fraction |
+| --- | ---: | ---: | ---: | ---: |
+| 003 | +0.02280 | +0.03762 | 0.0375 | 0.75 |
+| 005 | +0.01868 | +0.02917 | 0.0250 | 0.62 |
+| 011 | -0.02467 | -0.04014 | 0.0375 | 0.62 |
+| 012 | -0.01885 | -0.03061 | 0.0375 | 0.75 |
+| 017 | -0.00576 | -0.00873 | 0.4875 | 0.62 |
+| 027 | -0.01799 | -0.02880 | 0.1000 | 0.62 |
+| 031 | -0.01842 | -0.02939 | 0.0750 | 0.62 |
+
+Some training associations are stronger than block-shuffled target alignments, but the relationship changes sign. These period choices were selected after earlier performance inspection; **do not treat the p-values as an unbiased multiple-comparison-adjusted inference**, or conflate them with the server's private gate.
+
+### P5-B low-capacity regime models
+
+A numerical symmetry issue was discovered in the discrete rank-disagreement score: floating-order differences at the training median could flip a regime assignment under ticker reordering. Rounding the rank-disagreement scalar to 12 decimals at construction (both research and standalone class) restores invariant regime assignment. Earlier unrounded findings are superseded.
+
+After the fix, [P5-B full research workflow](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38590603696):
+
+| Regime | Discovery gross | Discovery net | Confirmation gross | Confirmation net | Confirmation positive |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Constant rank1 | +0.013395 | +0.007830 | +0.023002 | +0.015400 | 2/4 |
+| Feature1 raw dispersion | +0.002977 | -0.002410 | +0.016833 | +0.007937 | 2/4 |
+| Feature1/6 rank disagreement | +0.015164 | +0.009452 | +0.031301 | +0.022645 | 4/4 |
+
+The fixed disagreement hypothesis outperforms the unconditional model on these 11 sampled historical periods; however, this is not independent out-of-sample research evidence.
+
+### Full official validation — no-go
+
+`submissions/disagreement_regime_p5.py` is one standalone Predictor subclass. Its synthetic parity, causality, serialization, ticker permutation and missing-value checks pass. The latest-period runner's explicit cross-sectional neutrality check also passed.
+
+[Official full/gauge CI run 38590616667](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38590616667):
+
+| Metric | P5 disagreement-conditioned | P4 rank1 |
+| --- | ---: | ---: |
+| 31-period official net Sharpe | +0.0041 | +0.0050 |
+| Gauge IC | +0.0160 | +0.0185 |
+| City novelty | 55.4 deg | 58.6 deg |
+
+**Decision: Do not resubmit P5.** Its favorable sampled-period result does not survive all-history comparison; the previous P4 candidate was already server-rejected for weak evidence against its shuffled-label null. Further tuning these small regimes on the same windows risks researcher overfitting. Prefer genuinely distinct feature mechanisms, stronger target IC, and independent future periods.
+
+Updated artifacts are accessible in the two independent P5 jobs and official standalone job; no server acceptance is claimed.
