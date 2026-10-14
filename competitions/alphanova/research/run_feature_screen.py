@@ -122,6 +122,11 @@ def analyze_period(
             "valid_target_ic_rows": int(np.isfinite(signed_ic).sum()),
         }
         row.update(scores)
+        # Preserve exact pooled moments; average period Sharpe is invalid.
+        for col in ("gross", "net"):
+            values = pnl[col].to_numpy(dtype=float)
+            row[f"sum_{col}"] = float(values.sum())
+            row[f"sumsq_{col}"] = float(np.dot(values, values))
         rows.append(row)
     print(
         f"[{phase} {period}] evaluated={len(rows)} "
@@ -132,11 +137,10 @@ def analyze_period(
 
 
 def summarize_factors(rows: list[dict]) -> pd.DataFrame:
-    """Concatenated PnL moments from period summaries (equal 800 rows each).
+    """Aggregate exact pooled gross/net Sharpe from per-period PnL moments.
 
-    Within-period PnL is not retained to keep 48-factor screening cheap.
-    Sample std is reconstructed exactly from period mean and sample std,
-    not approximated by averaging each period's Sharpe.
+    Retain only sum and sum-of-squares rather than every factor's raw
+    800-hour PnL vector. This reproduces concatenated Sharpe exactly.
     """
     grouped = []
     for name, group in pd.DataFrame(rows).groupby("name", sort=False):
@@ -161,22 +165,13 @@ def summarize_factors(rows: list[dict]) -> pd.DataFrame:
         }
         n = record["observations"]
         for col in ("net", "gross"):
-            means = group[f"mean_{col}"].to_numpy(dtype=float)
-            count = group["observations"].to_numpy(dtype=int)
-            # Derive sample standard deviations from period Sharpe and mean.
-            sharpes = group[f"{col}_sharpe"].to_numpy(dtype=float)
-            stds = np.divide(
-                means, sharpes, out=np.zeros_like(means),
-                where=np.abs(sharpes) > 1e-12,
+            total_sum = float(group[f"sum_{col}"].sum())
+            total_sumsq = float(group[f"sumsq_{col}"].sum())
+            total_mean = total_sum / n
+            variance = max(
+                0.0, (total_sumsq - total_sum * total_sum / n) / max(n - 1, 1)
             )
-            # When Sharpe=0 due to near-zero sample mean, this can lose
-            # variance information. Aggregate moments are a research
-            # approximation; the per-period statistics remain authoritative.
-            total_mean = float(np.dot(count, means) / n)
-            total_ss = float(
-                np.sum((count - 1) * stds * stds + count * (means - total_mean) ** 2)
-            )
-            std = np.sqrt(max(0.0, total_ss) / max(n - 1, 1))
+            std = np.sqrt(variance)
             record[f"{col}_sharpe"] = total_mean / std if std > 0 else 0.0
             record[f"mean_{col}"] = total_mean
         grouped.append(record)
@@ -239,7 +234,7 @@ def run(config: dict, data_dir: Path, output_dir: Path) -> tuple[pd.DataFrame, p
             "Exploratory time-period validation; confirmation periods have "
             "already appeared in earlier P0-P3 model research. Results are "
             "not untouched hidden/live test performance. Aggregate Sharpe "
-            "is moment-reconstructed from per-period summaries."
+            "is exactly pooled from per-period PnL moments."
         ),
     }
     (output_dir / "manifest.json").write_text(
