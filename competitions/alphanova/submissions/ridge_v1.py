@@ -4,8 +4,8 @@ Submit this file as a single artifact; no imports from the research package.
 """
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import Ridge
 from predictor import Predictor
+from sklearn.linear_model import Ridge
 
 
 class RidgeCrossSectionalPredictor(Predictor):
