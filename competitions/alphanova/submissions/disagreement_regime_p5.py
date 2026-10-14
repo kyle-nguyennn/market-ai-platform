@@ -44,7 +44,7 @@ class DisagreementRegimePredictor(Predictor):
         y = features["Feature.6"].reindex(columns=tickers).to_numpy(dtype=float)
         rank1 = self._rank(x)
         rank6 = self._rank(y)
-        disagreement = np.mean(np.abs(rank1 - rank6), axis=1)
+        disagreement = np.round(np.mean(np.abs(rank1 - rank6), axis=1), 12)
         return rank1, disagreement, tickers
 
     @staticmethod
@@ -105,7 +105,7 @@ class DisagreementRegimePredictor(Predictor):
         out = np.empty_like(values)
         for i, target in enumerate(values):
             change = target - previous
-            if round(float(np.sort(np.abs(change)).sum()), 12) > self.min_trade_l1:
+            if np.abs(change).sum() > self.min_trade_l1:
                 previous = previous + self.rebalance_fraction * change
             out[i] = previous
         out -= out.mean(axis=1, keepdims=True)
