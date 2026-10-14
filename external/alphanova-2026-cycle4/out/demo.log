@@ -1,0 +1,30 @@
+Available training periods: 31
+  First: 001,  Last: 031
+
+Sample period: 001
+  Features shape: (28927, 120)
+  Returns shape:  (28927, 20)
+  Target shape:   (28927, 20)
+
+  Feature names: ['Feature.1', 'Feature.2', 'Feature.3', 'Feature.4', 'Feature.5', 'Feature.6']
+  Tickers:       ['ticker.1', 'ticker.2', 'ticker.3', 'ticker.4', 'ticker.5']...
+
+============================================================
+VALIDATION (latest period)
+============================================================
+Available periods: 31 (001 to 031)
+Using latest period: 031
+Total rows: 50815
+Training rows: 50015
+Validation rows: 800 (min(800, 20%))
+============================================================
+Trained in 4.3s
+Predicted in 0.0s
+Cross-sectional de-mean check: PASS
+
+Validation Sharpe: -0.2101
+Equity: start=0.0000, end=-0.0655
+Max drawdown from peak: -0.0667
+
+Validation Sharpe: -0.2101
+De-mean check: PASS
