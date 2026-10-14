@@ -50,10 +50,16 @@ def run(
     signs: list[int],
     scope: str,
     embargo_rows: int = 0,
+    period_keys: list[str] | None = None,
 ) -> list[dict]:
     periods = list_periods(str(data_dir))
     if not periods:
         raise FileNotFoundError(f"No training periods in {data_dir} (fetch Git LFS binaries)")
+    if period_keys is not None:
+        unknown = set(period_keys) - set(periods)
+        if unknown:
+            raise ValueError(f"Requested training periods not found: {sorted(unknown)}")
+        periods = [p for p in periods if p in set(period_keys)]
     if scope == "latest":
         periods = periods[-1:]
     if embargo_rows < 0:
@@ -189,6 +195,8 @@ def run(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scope", choices=("latest", "full"), default="latest")
+    parser.add_argument("--period-keys", nargs="+", default=None,
+                        help="Explicit chronological subset of cumulative periods")
     parser.add_argument("--config", type=Path, default=ROOT / "competitions/alphanova/configs/p1_grid.json")
     parser.add_argument("--models", nargs="+", choices=tuple(REGISTRY), default=None)
     parser.add_argument("--spans", nargs="+", type=int, default=None)
@@ -207,6 +215,7 @@ def main() -> None:
         signs=args.signs if args.signs is not None else config["signs"],
         scope=args.scope,
         embargo_rows=args.embargo_rows if args.embargo_rows is not None else config["embargo_rows"],
+        period_keys=args.period_keys,
     )
 
 
