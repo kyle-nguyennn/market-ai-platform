@@ -5,6 +5,8 @@ grid results as an untouched test set; the runner's periods are reusable.
 """
 from __future__ import annotations
 
+# ruff: noqa: I001 -- KIT sys.path must be initialized before importing its modules.
+
 import argparse
 import json
 import time
