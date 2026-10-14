@@ -1,0 +1,46 @@
+name: options_sim
+source_type: udp_market_data
+provider: synthetic  # local UDP publisher
+frequency: tick
+storage_backend: hdf5
+
+# --- Transport ---
+udp_host: 127.0.0.1
+udp_port: 9876
+buffer_size: 65536
+
+# --- Universe ---
+underlying: SPY
+strikes: 10          # number of strikes around ATM
+expiries: [30]    # 30 days to expiry for demo
+
+# --- Packet schema ---
+fields:
+  - session_id        # monotonic session UUID; increments on publisher restart
+  - sequence_number
+  - timestamp
+  - symbol
+  - msg_type          # quote | trade | spot
+  - bid
+  - ask
+  - bid_size
+  - ask_size
+  - strike
+  - expiry
+  - option_type       # C | P
+  - underlying_price
+
+# --- HDF5 layout ---
+hdf5_datasets:
+  raw_packets:
+    group_by: date
+    compression: gzip
+    compression_level: 4
+  bronze_quotes:
+    group_by: date
+    compression: gzip
+    compression_level: 4
+  silver_greeks:
+    group_by: date
+    compression: gzip
+    compression_level: 4
