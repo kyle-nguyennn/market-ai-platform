@@ -172,6 +172,15 @@ jobs:
           COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
             ../../competitions/alphanova/submissions/turnover_xgb_v1.py --gauge-fix \
             | tee ../../competitions/alphanova/results/ci-p2-full/p3_gauge_fix.log
+      - name: P3 selected packaged candidate official parity and gauge
+        run: |
+          cd external/alphanova-2026-cycle4
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/candidate_p3.py --full \
+            | tee ../../competitions/alphanova/results/ci-p2-full/candidate_p3_official_full.log
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/candidate_p3.py --gauge-fix \
+            | tee ../../competitions/alphanova/results/ci-p2-full/candidate_p3_gauge_fix.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
