@@ -126,3 +126,17 @@ This is a local validation only. The server gate's repeated shuffled-label retra
 - Run P0 parity on the full LFS dataset; compare baseline net Sharpe with -0.0155.
 - Report a table of gross/net/new-history Sharpe, turnover, cost drag and time for all first-grid candidates.
 - Do not submit on the strength of synthetic tests or local latest-period results alone.
+
+
+## Initial CI results — 2026-10-14 (latest period 031 only)
+
+[GitHub Actions run 38574775651](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38574775651): synthetic tests **9 passed**; latest-period smoke **passed** with actual Git LFS binaries (031 features: 50,815 rows x 120 columns). Results artifact: `alphanova-p0-p1-latest`.
+
+| Model | Span | Sign | Gross Sharpe | Net Sharpe | Mean L1 turnover |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Ridge | 120 | +1 | +0.06262 | **+0.03152** | 0.007072 |
+| XGB interactions | 120 | +1 | +0.04525 | +0.01517 | 0.004901 |
+| Engineered baseline | 120 | +1 | +0.03952 | +0.00868 | 0.004231 |
+| Ridge | 24 | +1 | +0.03286 | -0.02969 | 0.024195 |
+
+The sign-reversed span-120 variants were all negative net Sharpe. The strong drop from span 120 to 24 supports turnover control in this period. Numbers are from the CI dependency versions (Python 3.12, pandas 3.0.6, XGBoost 3.4.1), which differ from the previously logged baseline (+0.0068 latest). **These are single-period local validations, not full-history alpha or leaderboard outcomes.** Full 31-period P0 parity, non-overlap robustness and novelty remain unmeasured for the P1 models.
