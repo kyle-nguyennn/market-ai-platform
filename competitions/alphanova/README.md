@@ -1,18 +1,17 @@
 # AlphaNova research workspace
 
-See [IMPLEMENTATION_RESEARCH_PLAN.md](IMPLEMENTATION_RESEARCH_PLAN.md) for the milestones, constraints and experiment protocol.
+- [Implementation & Research Plan](IMPLEMENTATION_RESEARCH_PLAN.md): P0-P3 evaluation and submission criteria.
+- [P4 Feature Discovery](research/FEATURE_DISCOVERY.md): 48 predeclared same-hour cross-sectional factor hypotheses, strict period selection/confirmation and frozen execution policy.
 
-The supplied `external/alphanova-2026-cycle4` kit is an immutable reference. Research scripts here can use shared packages, while files under `submissions/` are **self-contained** Predictor classes that can be uploaded individually.
+The original `external/alphanova-2026-cycle4` competition kit is left unchanged. Submit only self-contained classes under `submissions/`; do not import the research package in a submission.
 
-From the repository root:
+From repository root with Git LFS binaries materialized:
 
 ```bash
-git lfs pull
 python -m pytest competitions/alphanova/tests -q
-python -m competitions.alphanova.research.run_experiments --scope latest
-python -m competitions.alphanova.research.run_experiments --scope full
+python -m competitions.alphanova.research.run_feature_screen \
+    --config competitions/alphanova/configs/p4_factors.json \
+    --output-dir competitions/alphanova/results/p4
 ```
 
-Results are written to `competitions/alphanova/results/`. Each invocation overwrites that output directory's `summary.csv`, `per_period.csv` and `manifest.json`, so use `--output-dir` for distinct experiments.
-
-Baseline model: upstream `demo_engineered.py`. P1 candidates: `ridge_v1.py`, `xgb_interactions_v1.py`.
+P4's CI workflow downloads precisely the 11 research periods, runs unit tests and uploads structured tables. It does **not** run the hidden server-side overfitting gate or certify an edge.

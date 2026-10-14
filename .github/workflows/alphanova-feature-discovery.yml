@@ -1,0 +1,59 @@
+name: AlphaNova P4 Feature Discovery
+
+on:
+  push:
+    branches:
+      - feat/alphanova-p0-p1
+    paths:
+      - "competitions/alphanova/research/feature_screen.py"
+      - "competitions/alphanova/research/run_feature_screen.py"
+      - "competitions/alphanova/tests/test_feature_screen.py"
+      - "competitions/alphanova/configs/p4_factors.json"
+      - ".github/workflows/alphanova-feature-discovery.yml"
+  workflow_dispatch:
+
+jobs:
+  factor-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install minimal scientific environment
+        run: |
+          python -m pip install numpy pandas pyarrow pytest
+      - name: Retrieve 11 fixed AlphaNova research panels from LFS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          periods=(001 004 007 010 013 016 019 022 025 028 031)
+          patterns=$(printf "external/alphanova-2026-cycle4/data/train/%s.small.*," "${periods[@]}")
+          git lfs pull --include="${patterns%,}" --exclude=""
+          python - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+          root = Path("external/alphanova-2026-cycle4/data/train")
+          for period in ("001", "019", "022", "031"):
+              name = f"{period}.small.features.parquet"
+              print(name, pd.read_parquet(root / name).shape)
+          PY
+      - name: P4 unit tests
+        run: |
+          python -m pytest competitions/alphanova/tests/test_feature_screen.py -q
+      - name: Predeclared factor screen, discovery then confirmation
+        run: |
+          python -m competitions.alphanova.research.run_feature_screen \
+            --config competitions/alphanova/configs/p4_factors.json \
+            --output-dir competitions/alphanova/results/ci-p4
+      - name: Upload P4 tables, frozen selection and raw experiment manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alphanova-p4-feature-discovery
+          path: competitions/alphanova/results/ci-p4/
+          if-no-files-found: warn
