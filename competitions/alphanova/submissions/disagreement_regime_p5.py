@@ -105,7 +105,7 @@ class DisagreementRegimePredictor(Predictor):
         out = np.empty_like(values)
         for i, target in enumerate(values):
             change = target - previous
-            if np.abs(change).sum() > self.min_trade_l1:
+            if round(float(np.sort(np.abs(change)).sum()), 12) > self.min_trade_l1:
                 previous = previous + self.rebalance_fraction * change
             out[i] = previous
         out -= out.mean(axis=1, keepdims=True)
