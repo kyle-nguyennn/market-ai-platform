@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from competitions.alphanova.research.positions import position_policy, policy_diagnostics
+from competitions.alphanova.research.positions import policy_diagnostics, position_policy
 
 
 def targets(seed=1, n=160):
