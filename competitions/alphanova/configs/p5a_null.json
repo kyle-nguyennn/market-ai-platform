@@ -1,0 +1,17 @@
+{
+  "factor": "rank_1",
+  "periods": [
+    "003",
+    "005",
+    "011",
+    "012",
+    "017",
+    "027",
+    "031"
+  ],
+  "train_tail_rows": 20000,
+  "embargo_rows": 168,
+  "block_rows": 168,
+  "permutations": 79,
+  "seed": 20261014
+}

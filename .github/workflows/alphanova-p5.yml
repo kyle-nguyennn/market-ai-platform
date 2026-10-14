@@ -1,0 +1,80 @@
+name: AlphaNova P5 Null and Regime Research
+
+on:
+  push:
+    branches: [feat/alphanova-p0-p1]
+    paths:
+      - "competitions/alphanova/research/run_p5a_null.py"
+      - "competitions/alphanova/research/regime.py"
+      - "competitions/alphanova/research/run_p5b_regimes.py"
+      - "competitions/alphanova/configs/p5*.json"
+      - "competitions/alphanova/tests/test_p5*.py"
+      - ".github/workflows/alphanova-p5.yml"
+  workflow_dispatch:
+
+jobs:
+  p5a-training-null:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dependencies
+        run: python -m pip install numpy pandas pyarrow pytest
+      - name: P5-A tests
+        run: python -m pytest competitions/alphanova/tests/test_p5a_null.py -q
+      - name: Fetch P5-A diagnostic periods from Git LFS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          periods=(003 005 011 012 017 027 031)
+          patterns=$(printf "external/alphanova-2026-cycle4/data/train/%s.small.*," "${periods[@]}")
+          git lfs pull --include="${patterns%,}" --exclude=""
+      - name: Training-only block-permutation diagnostics
+        run: |
+          python -m competitions.alphanova.research.run_p5a_null \
+            --output-dir competitions/alphanova/results/ci-p5a
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p5a-null
+          path: competitions/alphanova/results/ci-p5a/
+          if-no-files-found: warn
+
+  p5b-regime-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Dependencies
+        run: python -m pip install numpy pandas pyarrow pytest
+      - name: P5-B tests
+        run: python -m pytest competitions/alphanova/tests/test_p5b_regimes.py -q
+      - name: Fetch P5-B chronological periods from Git LFS
+        shell: bash
+        run: |
+          set -euo pipefail
+          git lfs install --local
+          periods=(001 004 007 010 013 016 019 022 025 028 031)
+          patterns=$(printf "external/alphanova-2026-cycle4/data/train/%s.small.*," "${periods[@]}")
+          git lfs pull --include="${patterns%,}" --exclude=""
+      - name: Predeclared regime discovery and confirmation
+        run: |
+          python -m competitions.alphanova.research.run_p5b_regimes \
+            --output-dir competitions/alphanova/results/ci-p5b
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p5b-regimes
+          path: competitions/alphanova/results/ci-p5b/
+          if-no-files-found: warn
