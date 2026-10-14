@@ -15,7 +15,6 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from competitions.alphanova.research.diagnostics import (
@@ -30,8 +29,9 @@ KIT = ROOT / "external" / "alphanova-2026-cycle4"
 sys.path.insert(0, str(KIT))
 
 from data_loader import list_periods, load_period  # noqa: E402
-from walkforward import compute_val_rows  # noqa: E402
 from demo_engineered import EngineeredXGBoostPredictor  # noqa: E402
+from walkforward import compute_val_rows  # noqa: E402
+
 from competitions.alphanova.submissions.ridge_v1 import RidgeCrossSectionalPredictor  # noqa: E402
 from competitions.alphanova.submissions.xgb_interactions_v1 import XGBInteractionPredictor  # noqa: E402
 
@@ -197,7 +197,10 @@ def main() -> None:
     parser.add_argument("--scope", choices=("latest", "full"), default="latest")
     parser.add_argument("--period-keys", nargs="+", default=None,
                         help="Explicit chronological subset of cumulative periods")
-    parser.add_argument("--config", type=Path, default=ROOT / "competitions/alphanova/configs/p1_grid.json")
+    parser.add_argument(
+        "--config", type=Path,
+        default=ROOT / "competitions/alphanova/configs/p1_grid.json",
+    )
     parser.add_argument("--models", nargs="+", choices=tuple(REGISTRY), default=None)
     parser.add_argument("--spans", nargs="+", type=int, default=None)
     parser.add_argument("--signs", nargs="+", type=int, default=None)
