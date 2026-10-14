@@ -212,3 +212,9 @@ oryx-build-commands.txt
 
 # data
 data
+
+# AlphaNova cycle 4 training data is versioned with Git LFS.
+!/external/alphanova-2026-cycle4/data/
+/external/alphanova-2026-cycle4/data/*
+!/external/alphanova-2026-cycle4/data/train/
+!/external/alphanova-2026-cycle4/data/train/**
