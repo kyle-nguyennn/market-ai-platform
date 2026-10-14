@@ -23,6 +23,8 @@ build-backend = "setuptools.build_meta"
 include = ["libs*"]
 
 [tool.ruff]
+# Third-party competition kits are vendored verbatim; lint owned code instead.
+extend-exclude = ["external/"]
 line-length = 100
 target-version = "py311"
 

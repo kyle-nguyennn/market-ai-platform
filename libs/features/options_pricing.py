@@ -1,6 +1,4 @@
-from math import log, sqrt, exp
 from typing import Tuple
-from scipy.stats import norm
 
 def black_scholes_price(
     S: float,  # Stock price

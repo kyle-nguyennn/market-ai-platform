@@ -1,4 +1,5 @@
 """P5 standalone model must match research regime coefficients and policy."""
+# ruff: noqa: I001 -- external kit import path is installed before test imports.
 from __future__ import annotations
 
 import ast

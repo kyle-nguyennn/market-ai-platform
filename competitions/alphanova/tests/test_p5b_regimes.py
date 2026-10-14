@@ -5,11 +5,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from competitions.alphanova.research.feature_screen import feature_panels
 from competitions.alphanova.research.regime import (
     REGIMES, conditional_factor, fit_regime, predict_raw,
     regime_score, train_from_panels,
 )
-from competitions.alphanova.research.feature_screen import feature_panels
 
 
 def panels(n=480):

@@ -1,9 +1,8 @@
 name: AlphaNova P0 P1 Research
 
 on:
-  push:
-    branches:
-      - feat/alphanova-p0-p1
+  pull_request:
+    branches: [alphanova-2026-4]
     paths:
       - "competitions/alphanova/**"
       - ".github/workflows/alphanova-research.yml"
@@ -28,6 +27,8 @@ jobs:
           python -m pytest competitions/alphanova/tests -q
 
   latest-period-smoke:
+    # Long LFS-backed runs are explicit research jobs, not every PR update.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     needs: synthetic-tests
@@ -85,6 +86,8 @@ jobs:
           if-no-files-found: warn
 
   full-history-research:
+    # Long LFS-backed runs are explicit research jobs, not every PR update.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     needs: synthetic-tests
@@ -131,6 +134,8 @@ jobs:
           if-no-files-found: warn
 
   p2-p3-full-history:
+    # Long LFS-backed runs are explicit research jobs, not every PR update.
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     needs: synthetic-tests
