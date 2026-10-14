@@ -1,0 +1,6 @@
+{
+  "models": ["baseline", "ridge", "xgb_interactions"],
+  "spans": [24, 120],
+  "signs": [1, -1],
+  "embargo_rows": 0
+}
