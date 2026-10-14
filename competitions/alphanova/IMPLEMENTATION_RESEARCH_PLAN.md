@@ -217,3 +217,24 @@ Tasks:
 - [ ] Final sign-off requires **positive gross and net walk-forward Sharpe**, non-overlap stability and novelty; otherwise reject candidate.
 
 The final package always contains only the selected `.py` file; no local research module imports or changed upstream kit modules.
+
+
+## P2/P3 measured results and promotion decision — 2026-10-14
+
+Source: [P2/P3 full CI run 38577733392](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38577733392). All 31 LFS-backed periods and all 31 gauge matrices loaded successfully. The initial policy sweep and official runner validation **passed**.
+
+| P2 config | EWM | No-trade L1 band | Rebalance fraction | Gross Sharpe | Net Sharpe | Non-overlap net |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Upstream engineered baseline | 240 | 0.020 | 0.50 | -0.00021 | **-0.00653** | -0.00503 |
+| XGB interactions | 240 | 0.020 | 0.50 | -0.00016 | -0.00700 | -0.00534 |
+| XGB interactions | 240 | 0.020 | 1.00 | +0.00004 | -0.00809 | -0.00610 |
+
+The selected parameter combination improves the original -0.01526 P1 net Sharpe but still has non-positive gross Sharpe. **This is an execution policy improvement, not alpha discovery.** The grid is exploratory: optimized against the same 31 periods, subject to selection bias.
+
+Provisional `turnover_xgb_v1.py` P3 official full runner:
+- Net Sharpe **-0.0139**; IC **+0.0009**; city novelty **39.6°** (same closest city as baseline). Not promotable.
+- CI source: `p3_official_full.log`, `p3_gauge_fix.log` in the uploaded artifact.
+
+`submissions/candidate_p3.py` now packages the **measured best P2 configuration** as one standalone Predictor subclass. `tests/test_candidate_p3.py` verifies parity with the upstream model followed by `research.positions.position_policy`, causality, serialized inference, ticker equivariance, and overlapping inference. CI additionally executes its standalone full runner and gauge metrics, which must be checked before any use.
+
+**Decision:** No competition submission from the current model family. Neither negative net Sharpe nor <60° city novelty meets internal promotion requirements. Next research work should seek independent predictive structure in the six input features; further smoothing sweeps alone are unlikely to supply alpha. Treat this P3 file as a reproducibility artifact and ready-to-change packaging template.
