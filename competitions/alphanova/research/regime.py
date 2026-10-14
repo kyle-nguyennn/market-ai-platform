@@ -40,7 +40,7 @@ def regime_score(name: str, raw: list[np.ndarray]) -> np.ndarray:
         return np.sqrt(variance)
     if name == "feature1_6_disagreement":
         a, b = cross_rank(raw[0]), cross_rank(raw[5])
-        return np.mean(np.abs(a - b), axis=1)
+        return np.round(np.mean(np.abs(a - b), axis=1), 12)
     if name == "constant":
         return np.zeros(len(raw[0]), dtype=float)
     raise ValueError(f"Unrecognized regime: {name}")
