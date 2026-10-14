@@ -42,7 +42,7 @@ class HDF5Store:
         group_key: str = "default",
         compression: str = "gzip",
         compression_opts: int = 4,
-        append: bool = False,
+        append: bool = True,
     ) -> Path:
         """Write *df* into an HDF5 file under *group_key*.
 

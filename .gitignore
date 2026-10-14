@@ -208,3 +208,7 @@ __marimo__/
 
 # Codespaces
 oryx-build-commands.txt
+.vscode/
+
+# data
+data
