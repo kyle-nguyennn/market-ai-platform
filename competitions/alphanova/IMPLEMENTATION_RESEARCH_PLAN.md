@@ -51,9 +51,9 @@ References: `external/alphanova-2026-cycle4/out/demo_engineered_full.log` and `o
 - [x] Add both baseline and sign-inverted PnL; **costs do not change sign**.
 - [x] Add a non-overlapping cumulative-history *diagnostic*: retain validation rows first appearing after the previous period's total row count.
 - [x] Add an optional trailing training-label embargo as a sensitivity check; do not claim its width purges the undisclosed target horizon.
-- [ ] Run full 31-period reproduction and confirm aggregate P0 baseline net Sharpe is -0.0155 within numerical tolerance.
-- [ ] Inspect gross vs net gap and cost distribution; document root cause of negative net score.
-- [ ] Confirm LFS binary availability in the actual CI/workstation environment.
+- [x] Run full 31-period baseline reproduction: our net Sharpe -0.01526; official runner prints -0.0153 with identical CI dependencies.
+- [x] Inspect gross vs net gap: all three model variants have negative gross Sharpe, so modeling, not transaction costs alone, is the first bottleneck.
+- [x] Confirm all 31 periods' LFS binaries can be read in GitHub Actions (full-history job passed).
 
 **Validity caveat for non-overlap metric:** cumulative row positions must represent the same chronological timestamps from period to period; independent ticker rotations do not affect that temporal alignment. The method trims repeated rows but cannot recover new rows outside the runner's last-800 holdout. It is an additional diagnostic, not an official metric.
 
@@ -140,3 +140,19 @@ This is a local validation only. The server gate's repeated shuffled-label retra
 | Ridge | 24 | +1 | +0.03286 | -0.02969 | 0.024195 |
 
 The sign-reversed span-120 variants were all negative net Sharpe. The strong drop from span 120 to 24 supports turnover control in this period. Numbers are from the CI dependency versions (Python 3.12, pandas 3.0.6, XGBoost 3.4.1), which differ from the previously logged baseline (+0.0068 latest). **These are single-period local validations, not full-history alpha or leaderboard outcomes.** Full 31-period P0 parity, non-overlap robustness and novelty remain unmeasured for the P1 models.
+
+## P0/P1 full-history results — 2026-10-14
+
+[Full-history GitHub Actions run 38576305259](https://github.com/kyle-nguyennn/market-ai-platform/actions/runs/38576305259) completed successfully using **all 31 LFS-backed periods**. Synthetic tests passed, full P0/P1 comparison completed, and the supplied `runner.py demo_engineered.py --full` independently reported overall Sharpe **-0.0153**, agreeing with the research harness's baseline **-0.01526**.
+
+| Predictor | Span | Gross Sharpe | Net Sharpe | Nonoverlap net Sharpe | Mean L1 turnover |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| XGB interactions | 120 | -0.00123 | **-0.01483** | -0.01280 | 0.004137 |
+| Engineered baseline | 120 | -0.00171 | -0.01526 | -0.01332 | 0.003490 |
+| Ridge | 120 | -0.00347 | -0.01744 | -0.01602 | 0.005498 |
+
+A previous fixed, evenly-spaced **three-period** sample (001, 016, 031) yielded +0.02448 for XGB interactions, +0.02023 for baseline, and +0.01286 for Ridge. That optimistic slice **did not generalize to all 31 periods**.
+
+**Decision:** None of these P1 implementations has a positive local full-history edge. Do not submit them as-is. Since gross Sharpe is already negative, further smoothing alone cannot produce convincing alpha. Keep span 120 as a controlled reference and spend subsequent P1 iterations on substantially stronger cross-sectional predictive structure. Candidate ideas: univariate/difference/interaction ablations, regularized polynomial or spline features, feature-conditioned rank relationships, then low-capacity nonlinear ensemble. Apply unchanged 31-period backtests, nonoverlap checks and overfitting-gate constraints; avoid selecting models from one lucky period.
+
+Global repository lint remains failing on pre-existing files including the untouched upstream `external/` kit; this P0/P1 implementation was independently validated by its synthetic CI and research workflow. The branch remains a **draft PR**, pending a model with credible edge.
