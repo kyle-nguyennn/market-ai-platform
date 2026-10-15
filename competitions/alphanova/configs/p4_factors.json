@@ -1,0 +1,10 @@
+{
+  "discovery_periods": ["001", "004", "007", "010", "013", "016", "019"],
+  "confirmation_periods": ["022", "025", "028", "031"],
+  "train_tail_rows": 20000,
+  "embargo_rows": 168,
+  "span": 240,
+  "trade_band": 0.02,
+  "rebalance_fraction": 0.5,
+  "top_k": 6
+}

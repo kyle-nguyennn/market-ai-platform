@@ -1,0 +1,6 @@
+{
+  "models": ["baseline", "xgb_interactions"],
+  "spans": [120, 240],
+  "trade_bands": [0.0, 0.005, 0.02],
+  "rebalance_fractions": [1.0, 0.5]
+}

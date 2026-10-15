@@ -1,3 +1,4 @@
 
 def main():
-    # TODO: main loop
+    # TODO: implement market-data simulation.
+    pass

@@ -218,3 +218,7 @@ data
 /external/alphanova-2026-cycle4/data/*
 !/external/alphanova-2026-cycle4/data/train/
 !/external/alphanova-2026-cycle4/data/train/**
+
+# AlphaNova generated experiment products are CI artifacts, not versioned results.
+/competitions/alphanova/results/**
+!/competitions/alphanova/results/README.md

@@ -1,0 +1,66 @@
+name: AlphaNova P4 Standalone Candidates
+
+on:
+  push:
+    branches:
+      - feat/alphanova-p0-p1
+    paths:
+      - "competitions/alphanova/submissions/factor_rank1_p4.py"
+      - "competitions/alphanova/submissions/factor_diff36_p4.py"
+      - "competitions/alphanova/submissions/factor_blend_p4.py"
+      - "competitions/alphanova/tests/test_factor_submission_p4.py"
+      - "competitions/alphanova/tests/test_factor_blend_p4.py"
+      - ".github/workflows/alphanova-p4-submission-check.yml"
+  workflow_dispatch:
+
+jobs:
+  p4-submissions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install evaluation dependencies
+        run: |
+          python -m pip install numpy pandas pyarrow matplotlib pytest
+      - name: Test standalone file parity, causality, and robustness
+        run: |
+          python -m pytest competitions/alphanova/tests/test_factor_submission_p4.py competitions/alphanova/tests/test_factor_blend_p4.py -q
+      - name: Fetch all 31 training periods and gauge matrices from LFS
+        run: |
+          git lfs install --local
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/**" --exclude=""
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("external/alphanova-2026-cycle4/data/train")
+          assert len(list(root.glob("*.small.target.parquet"))) == 31
+          assert len(list((root / "gauge").glob("*.small.gauge.npy"))) == 31
+          print("All LFS research periods and gauge matrices present")
+          PY
+      - name: Full official walk-forward and gauge tests for rank1 diff36 and fixed blend
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p competitions/alphanova/results/ci-p4-candidates
+          cd external/alphanova-2026-cycle4
+          for name in factor_rank1_p4 factor_diff36_p4 factor_blend_p4; do
+            echo "========== ${name} full =========="
+            COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+              "../../competitions/alphanova/submissions/${name}.py" --full \
+              | tee "../../competitions/alphanova/results/ci-p4-candidates/${name}_full.log"
+            echo "========== ${name} gauge =========="
+            COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+              "../../competitions/alphanova/submissions/${name}.py" --gauge-fix \
+              | tee "../../competitions/alphanova/results/ci-p4-candidates/${name}_gauge.log"
+          done
+      - name: Upload official validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alphanova-p4-candidate-full-history
+          path: competitions/alphanova/results/ci-p4-candidates/
+          if-no-files-found: warn

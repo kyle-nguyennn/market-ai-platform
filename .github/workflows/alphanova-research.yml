@@ -1,0 +1,194 @@
+name: AlphaNova P0 P1 Research
+
+on:
+  pull_request:
+    branches: [alphanova-2026-4]
+    paths:
+      - "competitions/alphanova/**"
+      - ".github/workflows/alphanova-research.yml"
+  workflow_dispatch:
+
+jobs:
+  synthetic-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install lightweight test dependencies
+        run: |
+          python -m pip install numpy pandas scikit-learn xgboost matplotlib pytest
+      - name: Synthetic P0 parity and P1 contracts
+        run: |
+          python -m pytest competitions/alphanova/tests -q
+
+  latest-period-smoke:
+    # Long LFS-backed runs are explicit research jobs, not every PR update.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: synthetic-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install benchmarking dependencies
+        run: |
+          python -m pip install numpy pandas scikit-learn xgboost matplotlib pyarrow
+      - name: Fetch only latest AlphaNova LFS files
+        run: |
+          git lfs install --local
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/031.small.*" --exclude=""
+          python - <<'PY'
+          import pandas as pd
+          p = "external/alphanova-2026-cycle4/data/train/031.small.features.parquet"
+          print("Latest features:", pd.read_parquet(p).shape)
+          PY
+      - name: Run latest-period baseline, Ridge and XGBoost diagnostics
+        run: |
+          python -m competitions.alphanova.research.run_experiments \
+            --scope latest \
+            --data-dir external/alphanova-2026-cycle4/data/train \
+            --output-dir competitions/alphanova/results/ci-latest
+      - name: Fetch earliest and middle AlphaNova LFS periods
+        run: |
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/001.small.*,external/alphanova-2026-cycle4/data/train/016.small.*" --exclude=""
+          python - <<'PY'
+          import pandas as pd
+          for key in ("001", "016"):
+              path = f"external/alphanova-2026-cycle4/data/train/{key}.small.features.parquet"
+              print(key, pd.read_parquet(path).shape)
+          PY
+      - name: Sampled multi-period P0 P1 robustness
+        run: |
+          python -m competitions.alphanova.research.run_experiments \
+            --scope full --period-keys 001 016 031 --spans 120 --signs 1 \
+            --data-dir external/alphanova-2026-cycle4/data/train \
+            --output-dir competitions/alphanova/results/ci-sampled
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p0-p1-sampled
+          path: competitions/alphanova/results/ci-sampled/
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p0-p1-latest
+          path: competitions/alphanova/results/ci-latest/
+          if-no-files-found: warn
+
+  full-history-research:
+    # Long LFS-backed runs are explicit research jobs, not every PR update.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    needs: synthetic-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CPU research dependencies
+        run: |
+          python -m pip install numpy pandas scikit-learn xgboost matplotlib pyarrow
+      - name: Fetch 31 periods (no gauge matrices)
+        run: |
+          git lfs install --local
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/*.small.*" --exclude=""
+          python - <<'PY'
+          from pathlib import Path
+          import pandas as pd
+          root = Path("external/alphanova-2026-cycle4/data/train")
+          paths = list(root.glob("*.small.features.parquet"))
+          assert len(paths) == 31, f"Expected 31 period panels; got {len(paths)}"
+          print("Features period count:", len(paths))
+          print("Latest shape:", pd.read_parquet(root / "031.small.features.parquet").shape)
+          PY
+      - name: Full 31-period P0 P1 comparison
+        run: |
+          python -m competitions.alphanova.research.run_experiments \
+            --scope full --models baseline ridge xgb_interactions \
+            --spans 120 --signs 1 \
+            --data-dir external/alphanova-2026-cycle4/data/train \
+            --output-dir competitions/alphanova/results/ci-full
+      - name: Official local runner baseline parity
+        run: |
+          cd external/alphanova-2026-cycle4
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py demo_engineered.py --full \
+            | tee ../../competitions/alphanova/results/ci-full/official_baseline.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p0-p1-full
+          path: competitions/alphanova/results/ci-full/
+          if-no-files-found: warn
+
+  p2-p3-full-history:
+    # Long LFS-backed runs are explicit research jobs, not every PR update.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    needs: synthetic-tests
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install CPU research and validation dependencies
+        run: |
+          python -m pip install numpy pandas scikit-learn xgboost matplotlib pyarrow
+      - name: Materialize training data and gauge matrices from Git LFS
+        run: |
+          git lfs install --local
+          git lfs pull --include="external/alphanova-2026-cycle4/data/train/**" --exclude=""
+          python - <<'PY'
+          from pathlib import Path
+          import numpy as np
+          import pandas as pd
+          root = Path("external/alphanova-2026-cycle4/data/train")
+          assert len(list(root.glob("*.small.features.parquet"))) == 31
+          assert len(list((root / "gauge").glob("*.small.gauge.npy"))) == 31
+          print("Latest features:", pd.read_parquet(root / "031.small.features.parquet").shape)
+          print("Latest gauge:", np.load(root / "gauge/031.small.gauge.npy").shape)
+          PY
+      - name: P2 no-trade and partial rebalancing full walk-forward
+        run: |
+          python -m competitions.alphanova.research.run_p2 \
+            --scope full \
+            --output-dir competitions/alphanova/results/ci-p2-full
+      - name: P3 official standalone predictor validation
+        run: |
+          cd external/alphanova-2026-cycle4
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/turnover_xgb_v1.py --full \
+            | tee ../../competitions/alphanova/results/ci-p2-full/p3_official_full.log
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/turnover_xgb_v1.py --gauge-fix \
+            | tee ../../competitions/alphanova/results/ci-p2-full/p3_gauge_fix.log
+      - name: P3 selected packaged candidate official parity and gauge
+        run: |
+          cd external/alphanova-2026-cycle4
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/candidate_p3.py --full \
+            | tee ../../competitions/alphanova/results/ci-p2-full/candidate_p3_official_full.log
+          COMP6_DISABLE_PIP_INSTALL=1 python runner.py \
+            ../../competitions/alphanova/submissions/candidate_p3.py --gauge-fix \
+            | tee ../../competitions/alphanova/results/ci-p2-full/candidate_p3_gauge_fix.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: alphanova-p2-p3-full
+          path: competitions/alphanova/results/ci-p2-full/
+          if-no-files-found: warn
