@@ -25,6 +25,8 @@ include = ["libs*"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+# External/ contains organizer- or vendor-supplied kits; lint platform-owned code only.
+extend-exclude = ["external/"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
