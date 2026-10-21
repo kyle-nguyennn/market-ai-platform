@@ -2,6 +2,21 @@
 
 Data plane, inference plane, and eval/control plane for market signal research and production serving.
 
+
+## Research-to-production strategy workspace
+
+This repository also houses feature, alpha-signal and strategy **research**.
+Existing feature/model/eval libraries stay in place. The new starting points
+are `libs/signals/`, `libs/strategies/`, `libs/backtesting/`, `experiments/`
+and `deployment/`.
+
+An approved, versioned strategy is packaged for execution by the separate
+`market-maker` framework; `market-sim` remains an optional simulation engine.
+**Live execution is not implemented by the research skeleton.**
+
+See [Research-to-live trading architecture](docs/architecture/research-to-live-trading.md)
+for the ownership boundaries and promotion lifecycle.
+
 ## Architecture
 
 | Layer               | Service                | Port  |
